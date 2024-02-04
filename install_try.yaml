@@ -2,21 +2,36 @@
   become: true
   tasks:
     - name: Updating cache on Amazon Linux
-      package:
-        name:
-          - "{{apache_package}}"
-          - "{{php_package}}"
+      tags: always
+      dnf:
         state: latest
+        update_only: yes
         update_cache: yes
-        use: dnf
       when: ansible_distribution == "Amazon"
 
     - name: Updating cache on non-Amazon Linux
-      package:
-        name:
-          - "{{apache_package}}"
-          - "{{php_package}}"
+      tags: always
+      apt:
         state: latest
         update_cache: yes
+        upgrade: "dist"
       when: ansible_distribution != "Amazon"
+- hosts: web_server
+  become: true
+  tasks:
+    - name: install webserver package
+      apt:
+        name:
+        - "{{apache_package}}"
+        - "{{php_package}}"
+      when: ansible_distribution != "Amazon"
+- hosts: db_server
+  become: true
+  tasks:
+    - name: install database server
+      tags: amazon,mariadb
+      dnf:
+        name: mariadb105-server
+        state: latest
+      when: ansible_distribution == "Amazon"
 
