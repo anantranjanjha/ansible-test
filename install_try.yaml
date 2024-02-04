@@ -25,6 +25,13 @@
         - "{{apache_package}}"
         - "{{php_package}}"
       when: ansible_distribution != "Amazon"
+    - name:
+      copy:
+        src: hello_world.html
+        dest: /var/www/html/index.html
+        owner: root
+        group: root
+        mode: 0644
 - hosts: db_server
   become: true
   tasks:
