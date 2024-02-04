@@ -1,15 +1,22 @@
 - hosts: all
   become: true
-  tasks: 
+  tasks:
+    - name: Updating cache on Amazon Linux
+      package:
+        name:
+          - "{{apache_package}}"
+          - "{{php_package}}"
+        state: latest
+        update_cache: yes
+        use: dnf
+      when: ansible_distribution == "Amazon"
 
-  - name: update repo
-    apt: 
-      update_cache: yes
-    when: ansible_distribution=="Ubuntu"
-  - name: install apache2
-    apt:
-      name: apache2
-      state: absent
-  - name: install php support for apache
-    apt:
-      name: libapache2-mod-php
+    - name: Updating cache on non-Amazon Linux
+      package:
+        name:
+          - "{{apache_package}}"
+          - "{{php_package}}"
+        state: latest
+        update_cache: yes
+      when: ansible_distribution != "Amazon"
+
