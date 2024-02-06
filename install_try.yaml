@@ -5,7 +5,6 @@
       tags: always
       dnf:
         state: latest
-        update_only: yes
         update_cache: yes
       when: ansible_distribution == "Amazon"
 
@@ -14,7 +13,6 @@
       apt:
         state: latest
         update_cache: yes
-        upgrade: "dist"
       when: ansible_distribution != "Amazon"
 - hosts: web_server
   become: true
@@ -32,9 +30,41 @@
         owner: root
         group: root
         mode: 0644
+    - name: installing unzip
+      apt:
+        name: unzip
+    - name: unzipping file
+      unarchive:
+        src: https://releases.hashicorp.com/terraform/1.7.2/terraform_1.7.2_linux_amd64.zip
+        dest: /usr/bin/
+        owner: root
+        group: root
+        mode: 0744
+        remote_src: yes
 - hosts: db_server
   become: true
   tasks:
+    - name: install httpd in amazon linux
+      dnf:
+        name: httpd
+        state: latest
+    - name: starting service and enabling so it will start on resytarting
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+    - name: for changing file content
+      lineinfile:
+        path: /etc/httpd/conf/httpd.conf
+        regexp: '^ServerAdmin'
+        line: ServerAdmin anantt@localhost
+      register: httpd
+    - name: restarting if file content changed by looking at httpd state from register command above
+      service:
+        name: httpd
+        state: restarted
+        enabled: yes
+      when: httpd.changed
     - name: install database server
       tags: amazon,mariadb
       dnf:

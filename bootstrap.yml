@@ -1,0 +1,37 @@
+- hosts: all
+  become: true
+  tasks:
+    - name: Updating cache on Amazon Linux
+      tags: always
+      dnf:
+        state: latest
+        update_only: yes
+        update_cache: yes
+      when: ansible_distribution == "Amazon"
+
+    - name: Updating cache on non-Amazon Linux
+      tags: always
+      apt:
+        state: latest
+        update_cache: yes
+        upgrade: "dist"
+      when: ansible_distribution != "Amazon"
+- hosts: all
+  become: true
+  tasks:
+    - name: creating user
+      user:
+        name: anant
+        groups: root
+    - name: adding ssh keys
+      authorized_key:
+        path: ~/.ssh/authorized_keys
+        user: anant
+        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAfQ4jdsEi6cgGVVw/vI1cD2vqcz8Q3E74jAghLZpUwe ansible test"
+    - name: adding sudoer file to loginm without root
+      copy:
+        src: sudoer_anant
+        dest: /etc/sudoers.d/anant
+        owner: root
+        group: root
+        mode: 0440

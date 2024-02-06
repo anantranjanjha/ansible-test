@@ -1,4 +1,4 @@
 [db_server]
-ec2-user@ip-172-31-31-64 apache_package=httpd php_package=php
+ec2-user@ip-172-31-28-195 apache_package=httpd php_package=php
 [web_server]
-ip-172-31-28-175 apache_package=apache2 php_package=php
+ip-172-31-27-118 apache_package=apache2 php_package=php
