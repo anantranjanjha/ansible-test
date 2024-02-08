@@ -1,0 +1,13 @@
+- name: Updating cache on Amazon Linux
+  tags: always
+  dnf:
+    state: latest
+    update_cache: yes
+  when: ansible_distribution == "Amazon"
+
+- name: Updating cache on non-Amazon Linux
+  tags: always
+  apt:
+    state: latest
+    update_cache: yes
+  when: ansible_distribution != "Amazon"

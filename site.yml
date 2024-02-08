@@ -18,19 +18,14 @@
       when: ansible_distribution != "Amazon"
 - hosts: all
   become: true
-  tasks:
-    - name: creating user
-      user:
-        name: anant
-        groups: root
-    - name: adding ssh keys
-      authorized_key:
-        user: anant
-        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIiUujVbgEYZOFfwsWWUk6Rn5CLYs2UUcMZvtw6y4Hn8 ansible"
-    - name: adding sudoer file to loginm without root
-      copy:
-        src: sudoer_anant
-        dest: /etc/sudoers.d/anant
-        owner: root
-        group: root
-        mode: 0440
+  roles:
+    - role: workstation
+    - role: user
+- hosts: web_server
+  become: true
+  roles:
+    - role: webserver
+- hosts: db_server
+  become: true
+  roles:
+    - role: dbserver

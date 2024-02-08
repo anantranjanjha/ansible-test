@@ -1,0 +1,27 @@
+- name: install httpd in amazon linux
+  dnf:
+    name: httpd
+    state: latest
+- name: starting service and enabling so it will start on resytarting
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+- name: for changing file content
+  lineinfile:
+    path: /etc/httpd/conf/httpd.conf
+    regexp: '^ServerAdmin'
+    line: ServerAdmin anantt@localhost
+  register: httpd
+- name: restarting if file content changed by looking at httpd state from register command above
+  service:
+    name: httpd
+    state: restarted
+    enabled: yes
+  when: httpd.changed
+- name: install database server
+  tags: amazon,mariadb
+  dnf:
+    name: mariadb105-server
+    state: latest
+  when: ansible_distribution == "Amazon"

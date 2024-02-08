@@ -1,0 +1,24 @@
+- name: install webserver package
+  apt:
+    name:
+    - "{{apache_package}}"
+    - "{{php_package}}"
+  when: ansible_distribution != "Amazon"
+- name:
+  copy:
+    src: hello_world.html
+    dest: /var/www/html/index.html
+    owner: root
+    group: root
+    mode: 0644
+- name: installing unzip
+  apt:
+    name: unzip
+- name: unzipping file
+  unarchive:
+    src: https://releases.hashicorp.com/terraform/1.7.2/terraform_1.7.2_linux_amd64.zip
+    dest: /usr/bin/
+    owner: root
+    group: root
+    mode: 0744
+    remote_src: yes

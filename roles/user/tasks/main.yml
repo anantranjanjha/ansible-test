@@ -1,0 +1,30 @@
+- name: Updating cache on Amazon Linux
+  tags: always
+  dnf:
+    state: latest
+    update_only: yes
+    update_cache: yes
+  when: ansible_distribution == "Amazon"
+
+- name: Updating cache on non-Amazon Linux
+  tags: always
+  apt:
+    state: latest
+    update_cache: yes
+    upgrade: "dist"
+  when: ansible_distribution != "Amazon"
+- name: creating user
+  user:
+    name: anant
+    groups: root
+- name: adding ssh keys
+  authorized_key:
+    user: anant
+    key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIiUujVbgEYZOFfwsWWUk6Rn5CLYs2UUcMZvtw6y4Hn8 ansible"
+- name: adding sudoer file to loginm without root
+  copy:
+    src: sudoer_anant
+    dest: /etc/sudoers.d/anant
+    owner: root
+    group: root
+    mode: 0440
